@@ -20,8 +20,8 @@
   - hostel-events: uploaded event media
  */
 (function () {
-  const SUPABASE_URL = "https://tezuqfyrirfohqhayahq.supabase.co"; // CHANGE REQUIRED: replace with your Supabase project URL
-  const SUPABASE_ANON_KEY = "sb_publishable_vVOCbqgmEBMcbwn_gCIE4w_cKxMi7-G"; // CHANGE REQUIRED: replace with your Supabase publishable anon key
+  const SUPABASE_URL = "https://rhnydvjdcnbnoqteudsw.supabase.co"; // CHANGE REQUIRED: replace with your Supabase project URL
+  const SUPABASE_ANON_KEY = "sb_publishable_hIdxlurqKmCs57caTsqLGQ_0L0vvFf8-G"; // CHANGE REQUIRED: replace with your Supabase publishable anon key
   const APP_TIMEZONE = "Asia/Kolkata";
   const APP_UTC_OFFSET = "+05:30";
 
