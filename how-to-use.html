@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Use | Hostel Management System</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    body {
+      margin: 0;
+    }
+
+    .guide-shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 24px auto 40px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .guide-hero,
+    .guide-card,
+    .guide-step,
+    .guide-note {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #d7e2f1;
+      border-radius: 24px;
+      box-shadow: var(--shadow-1);
+    }
+
+    .guide-hero,
+    .guide-card,
+    .guide-note {
+      padding: 24px;
+    }
+
+    .guide-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #e9f1fb;
+      color: #21436d;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .guide-hero h2,
+    .guide-card h3,
+    .guide-step h3,
+    .guide-note h3 {
+      margin: 0;
+      color: #112949;
+    }
+
+    .guide-hero h2 {
+      margin-top: 14px;
+      font-size: clamp(28px, 4vw, 40px);
+    }
+
+    .guide-hero p,
+    .guide-card p,
+    .guide-step p,
+    .guide-note p,
+    .guide-card li,
+    .guide-step li,
+    .guide-note li {
+      margin: 0;
+      color: #4f627d;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .guide-card ul,
+    .guide-step ul,
+    .guide-note ul {
+      margin: 12px 0 0;
+      padding-left: 20px;
+    }
+
+    .guide-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .guide-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+    }
+
+    .guide-steps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .guide-step {
+      padding: 22px;
+    }
+
+    .guide-step-no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      margin-bottom: 14px;
+      border-radius: 14px;
+      background: linear-gradient(120deg, var(--brand) 0%, var(--brand-2) 100%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .guide-step h3,
+    .guide-note h3 {
+      margin-bottom: 10px;
+      font-size: 19px;
+    }
+
+    .guide-card h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    .guide-note {
+      border-left: 5px solid var(--accent);
+    }
+
+    .sql-panel {
+      background: #0f2037;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      box-shadow: var(--shadow-1);
+      overflow: hidden;
+    }
+
+    .sql-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .sql-panel-head h3 {
+      margin: 0;
+      color: #f8fbff;
+    }
+
+    .sql-panel-head p {
+      margin: 4px 0 0;
+      color: #b9c8dd;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .sql-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .sql-actions button,
+    .sql-actions a {
+      width: auto;
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      color: #10233e;
+      background: #f5f9ff;
+      cursor: pointer;
+    }
+
+    .sql-code {
+      max-height: 520px;
+      margin: 0;
+      padding: 20px;
+      overflow: auto;
+      color: #eaf2ff;
+      background: #0b1728;
+      font-size: 12px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .sql-status {
+      min-height: 20px;
+      padding: 0 20px 18px;
+      color: #b9c8dd;
+      font-size: 13px;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: #eef4fb;
+      color: #183b63;
+      font-size: 0.95em;
+    }
+
+    @media (max-width: 900px) {
+      .guide-grid,
+      .guide-steps {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .guide-shell {
+        width: min(1120px, calc(100% - 20px));
+        margin-top: 16px;
+      }
+
+      .guide-hero,
+      .guide-card,
+      .guide-step,
+      .guide-note {
+        border-radius: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="guide-shell">
+    <section class="guide-hero">
+      <span class="guide-eyebrow">Plain English Guide</span>
+      <h2>How to use this hostel management system</h2>
+      <p>This page explains the full setup in a normal, step-by-step way. If you are opening this project for the first time, follow the steps in order and you will have the app working with your own Supabase project.</p>
+      <div class="guide-actions">
+        <a class="guide-btn primary" href="login.html">Open Login Page</a>
+        <a class="guide-btn secondary" href="supabase-setup.sql" download>Download SQL File</a>
+        <a class="guide-btn secondary" href="#sql-queries">View SQL Queries</a>
+      </div>
+    </section>
+
+    <section class="guide-grid">
+      <article class="guide-card">
+        <h3>Before you start</h3>
+        <p>You only need a few things before beginning.</p>
+        <ul>
+          <li>A Supabase account.</li>
+          <li>This project folder on your computer.</li>
+          <li>One email address and password that you want to use as the hostel admin login.</li>
+        </ul>
+      </article>
+
+      <aside class="guide-note">
+        <h3>Simple idea</h3>
+        <p>This project is just a frontend. Supabase is used for login, database tables, and image storage. So the setup is mostly about creating a Supabase project and connecting this app to it.</p>
+      </aside>
+    </section>
+
+    <section class="guide-steps">
+      <article class="guide-step">
+        <div class="guide-step-no">Step 1</div>
+        <h3>Create a Supabase account</h3>
+        <p>Go to Supabase and sign up if you do not already have an account. After logging in, you will reach the Supabase dashboard.</p>
+      </article>
+
+      <article class="guide-step">
+        <div class="guide-step-no">Step 2</div>
+        <h3>Create a new project</h3>
+        <p>Click the option to create a new project. Give it a name, choose a database password, and select the region you prefer. Then wait until the project finishes creating.</p>
+      </article>
+
+      <article class="guide-step">
+        <div class="guide-step-no">Step 3</div>
+        <h3>Create your admin login</h3>
+        <p>Inside Supabase, open <code>Authentication</code>, then <code>Users</code>, and create a user manually. Enter the email and password that you want to use for this hostel system login page.</p>
+      </article>
+
+      <article class="guide-step">
+        <div class="guide-step-no">Step 4</div>
+        <h3>Open the SQL editor</h3>
+        <p>In your Supabase project, open the <code>SQL Editor</code>. This is where you will create all the tables that this app needs.</p>
+      </article>
+
+      <article class="guide-step">
+        <div class="guide-step-no">Step 5</div>
+        <h3>Run the database setup SQL</h3>
+        <p>Copy the SQL from the <code>SQL queries to run</code> section below, paste everything into the Supabase SQL Editor, and run it. This creates the required tables, relationships, policies, indexes, and storage buckets.</p>
+      </article>
+
+      <article class="guide-step">
+        <div class="guide-step-no">Step 6</div>
+        <h3>Set up storage buckets</h3>
+        <p>This project uses storage for student photos and hostel event images. If the SQL creates them for you, that part is already handled. If not, create the buckets that the project expects, such as <code>student-photos</code> and <code>hostel-events</code>.</p>
+      </article>
+
+      <article class="guide-step">
+        <div class="guide-step-no">Step 7</div>
+        <h3>Copy your project URL and anon key</h3>
+        <p>In Supabase, open <code>Project Settings</code> and then the API section. Copy the project URL and the public anon key. These two values are needed to connect this app to your Supabase project.</p>
+      </article>
+
+      <article class="guide-step">
+        <div class="guide-step-no">Step 8</div>
+        <h3>Update <code>supabase-config.js</code></h3>
+        <p>Open <code>supabase-config.js</code> in this project. Replace the placeholder project URL and placeholder anon key with your real Supabase values. Do not change the rest of the file unless you know why you are changing it.</p>
+      </article>
+
+      <article class="guide-step">
+        <div class="guide-step-no">Step 9</div>
+        <h3>Open the project in your browser</h3>
+        <p>Start or open the project the same way you normally do on your computer, then go to the login page. If the configuration is correct, the login button should work instead of showing a setup warning.</p>
+      </article>
+
+      <article class="guide-step">
+        <div class="guide-step-no">Step 10</div>
+        <h3>Log in with the admin user</h3>
+        <p>Use the email and password you created in Supabase Authentication. After login, you should reach the dashboard.</p>
+      </article>
+
+      <article class="guide-step">
+        <div class="guide-step-no">Step 11</div>
+        <h3>Start adding your real hostel data</h3>
+        <p>Now you can begin using the system normally. Add rooms first, then add students, then use attendance, installments, notifications, complaints, and events as needed.</p>
+      </article>
+
+      <article class="guide-step">
+        <div class="guide-step-no">Step 12</div>
+        <h3>Change branding if you want</h3>
+        <p>If this system is for another hostel or college, replace the logo image, background image, and any visible college name text so the project matches your own institution.</p>
+      </article>
+    </section>
+
+    <section id="sql-queries" class="sql-panel">
+      <div class="sql-panel-head">
+        <div>
+          <h3>SQL queries to run</h3>
+          <p>Paste this full script into Supabase SQL Editor after creating your Supabase project and admin auth user.</p>
+        </div>
+        <div class="sql-actions">
+          <button type="button" id="copySqlBtn">Copy SQL</button>
+          <a href="supabase-setup.sql" download>Download SQL</a>
+        </div>
+      </div>
+      <pre class="sql-code" id="sqlCode">Loading supabase-setup.sql...</pre>
+      <div class="sql-status" id="sqlStatus" aria-live="polite"></div>
+    </section>
+
+    <section class="guide-grid">
+      <article class="guide-card">
+        <h3>If something does not work</h3>
+        <ul>
+          <li>If login is disabled, check whether <code>supabase-config.js</code> still has placeholder values.</li>
+          <li>If data is not loading, make sure the SQL setup finished successfully in Supabase.</li>
+          <li>If uploads fail, check that storage buckets exist and storage access is allowed.</li>
+          <li>If your login fails, confirm the user was created in Supabase Authentication and the password is correct.</li>
+        </ul>
+      </article>
+
+      <article class="guide-card">
+        <h3>Recommended order after setup</h3>
+        <ul>
+          <li>Create rooms.</li>
+          <li>Add students and assign rooms.</li>
+          <li>Use attendance to track present and absent students.</li>
+          <li>Use installments and transactions for fee tracking.</li>
+          <li>Use notifications, complaints, and events for daily hostel management.</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const sqlCode = document.getElementById("sqlCode");
+    const sqlStatus = document.getElementById("sqlStatus");
+    const copySqlBtn = document.getElementById("copySqlBtn");
+
+    async function loadSqlFile() {
+      try {
+        const response = await fetch("supabase-setup.sql", { cache: "no-store" });
+        if (!response.ok) throw new Error("Unable to load SQL file.");
+        sqlCode.textContent = await response.text();
+        sqlStatus.textContent = "SQL loaded from supabase-setup.sql.";
+      } catch (error) {
+        sqlCode.textContent = "Could not load supabase-setup.sql. Use the Download SQL button and open the file manually.";
+        sqlStatus.textContent = error.message || "SQL file could not be loaded.";
+      }
+    }
+
+    copySqlBtn.addEventListener("click", async function () {
+      try {
+        await navigator.clipboard.writeText(sqlCode.textContent);
+        sqlStatus.textContent = "SQL copied. Paste it into Supabase SQL Editor and run it.";
+      } catch (error) {
+        sqlStatus.textContent = "Copy failed. Select the SQL text manually and copy it.";
+      }
+    });
+
+    loadSqlFile();
+  </script>
+</body>
+</html>

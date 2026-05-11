@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complaint Management</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <style>
+    body {
+      background: #f4f6f9;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .topbar {
+      background: #111827;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .complaints-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+
+    .complaints-kicker {
+      color: #64748b;
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .complaints-title {
+      margin: 4px 0 6px;
+      font-size: clamp(1.7rem, 3vw, 2.45rem);
+      font-weight: 900;
+      color: #10213b;
+    }
+
+    .complaints-subtitle {
+      color: #5f6f86;
+      margin: 0;
+      max-width: 680px;
+    }
+
+    .complaint-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .complaint-summary-card {
+      background: #fff;
+      border: 1px solid #dbe5f1;
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
+    }
+
+    .complaint-summary-card span {
+      display: block;
+      color: #64748b;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .complaint-summary-card strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 1.75rem;
+      line-height: 1;
+      color: #10213b;
+    }
+
+    .complaint-toolbar {
+      background: #fff;
+      border: 1px solid #dbe5f1;
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
+      margin-bottom: 18px;
+    }
+
+    .complaint-card {
+      border: 1px solid #dbe5f1;
+      border-radius: 18px;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+    }
+
+    .complaint-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      cursor: pointer;
+    }
+
+    .complaint-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #12213a;
+    }
+
+    .complaint-meta {
+      color: #64748b;
+      font-size: 0.86rem;
+    }
+
+    .complaint-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .complaint-description,
+    .complaint-students {
+      border: 1px solid #e0e8f2;
+      border-radius: 14px;
+      padding: 14px;
+      background: #f8fbff;
+    }
+
+    .student-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #e5edf6;
+    }
+
+    .student-row:last-child {
+      border-bottom: 0;
+    }
+
+    .student-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 100%;
+      white-space: normal;
+    }
+
+    .student-badge button {
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border-radius: 999px !important;
+      line-height: 1;
+    }
+
+    .app-pagination {
+      margin-top: 22px;
+    }
+
+    @media (max-width: 900px) {
+      .complaints-hero,
+      .complaint-card-header {
+        grid-template-columns: 1fr;
+        display: block;
+      }
+
+      .complaint-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .complaint-actions {
+        justify-content: flex-start;
+        margin-top: 12px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .complaint-summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="theme.css">
+</head>
+
+<body>
+
+  <div class="topbar">
+    <h5 class="mb-0">Complaint Management</h5>
+    <button class="btn btn-light btn-sm" onclick="location.href='dashboard.html'">
+      Back
+    </button>
+  </div>
+
+  <div class="container mt-4">
+    <section class="complaints-hero">
+      <div>
+        <div class="complaints-kicker">Hostel Care Desk</div>
+        <h1 class="complaints-title">Complaint Management</h1>
+      </div>
+      <button class="btn btn-primary" type="button" onclick="openAddModal()">
+        <i class="bi bi-plus-circle me-1"></i> New Complaint
+      </button>
+    </section>
+
+    <section class="complaint-summary-grid" aria-label="Complaint summary">
+      <article class="complaint-summary-card">
+        <span>Total Complaints</span>
+        <strong id="summaryTotal">0</strong>
+      </article>
+      <article class="complaint-summary-card">
+        <span>Pending Students</span>
+        <strong id="summaryPending">0</strong>
+      </article>
+      <article class="complaint-summary-card">
+        <span>Resolved Students</span>
+        <strong id="summaryResolved">0</strong>
+      </article>
+      <article class="complaint-summary-card">
+        <span>High Priority</span>
+        <strong id="summaryHigh">0</strong>
+      </article>
+    </section>
+
+    <div class="row g-3 complaint-toolbar">
+      <div class="col-md-4">
+        <input type="text" id="searchBox" class="form-control" placeholder="Search by title or student">
+      </div>
+      <div class="col-md-3">
+        <select id="statusFilter" class="form-select">
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select id="priorityFilter" class="form-select">
+          <option value="all">All Priority</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="complaintList"></div>
+    <div class="app-pagination" id="complaintsPagination" style="display:none;">
+      <button type="button" class="btn btn-light btn-sm" id="complaintsPrevBtn">Previous</button>
+      <div class="app-pagination-info" id="complaintsPageInfo">Page 1 of 1</div>
+      <button type="button" class="btn btn-light btn-sm" id="complaintsNextBtn">Next</button>
+    </div>
+
+  </div>
+
+  <!-- ADD MODAL -->
+  <div class="modal fade" id="addModal">
+    <div class="modal-dialog">
+      <div class="modal-content p-3">
+
+        <h5>Create Complaint</h5>
+
+        <input type="text" id="compTitle" class="form-control mb-2" placeholder="Title">
+
+        <textarea id="compDesc" class="form-control mb-2" placeholder="Description"></textarea>
+
+        <select id="compPriority" class="form-select mb-2">
+          <option value="high">High Priority</option>
+          <option value="medium">Medium Priority</option>
+          <option value="low">Low Priority</option>
+        </select>
+
+        <div class="mb-3">
+
+          <input type="text" id="studentSearch" class="form-control" placeholder="Search student by name or HST">
+
+          <div id="searchResults" class="list-group mt-1" style="max-height:150px;overflow:auto;">
+          </div>
+
+          <div id="selectedStudents" class="mt-2 d-flex flex-wrap gap-2">
+          </div>
+
+        </div>
+
+        <div class="text-end">
+          <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary btn-sm" id="createComplaintBtn" onclick="runLockedAction('create-complaint', this, createComplaint)">Create</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let deleteComplaintId = null;
+    const actionLocks = new Set();
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    async function runLockedAction(key, button, task) {
+      if (actionLocks.has(key)) return;
+      actionLocks.add(key);
+
+      const originalText = button ? button.innerHTML : "";
+      if (button) {
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span> Working';
+      }
+
+      try {
+        return await task();
+      } catch (error) {
+        console.error(`${key} failed:`, error);
+        alert("Something went wrong. Please try again.");
+      } finally {
+        actionLocks.delete(key);
+        if (button) {
+          button.disabled = false;
+          button.innerHTML = originalText;
+        }
+      }
+    }
+
+    function withTimeout(promise, message, timeoutMs = 8000) {
+      let timeoutId;
+      const timeout = new Promise((_, reject) => {
+        timeoutId = window.setTimeout(() => reject(new Error(message)), timeoutMs);
+      });
+
+      return Promise.race([promise, timeout]).finally(() => window.clearTimeout(timeoutId));
+    }
+
+    function renderSelectedStudents() {
+      const container = document.getElementById("selectedStudents");
+      const selected = allStudents.filter(student => selectedStudentIds.has(student.id));
+
+      container.innerHTML = selected.map(student => `
+        <span class="badge bg-primary student-badge" id="badge-${escapeHtml(student.id)}">
+          ${escapeHtml(student.name)} (${escapeHtml(student.hst_number || "-")})
+          <button type="button" class="btn btn-light btn-sm" aria-label="Remove ${escapeHtml(student.name)}" onclick="removeStudent('${escapeHtml(student.id)}')">&times;</button>
+        </span>
+      `).join("");
+    }
+
+    function updateComplaintSummary() {
+      const total = allComplaints.length;
+      const high = allComplaints.filter(item => (item.priority || "low") === "high").length;
+      let pending = 0;
+      let resolved = 0;
+
+      allComplaints.forEach(item => {
+        (item.complaint_students || []).forEach(link => {
+          if (link.status === "resolved") resolved += 1;
+          else pending += 1;
+        });
+      });
+
+      document.getElementById("summaryTotal").textContent = String(total);
+      document.getElementById("summaryPending").textContent = String(pending);
+      document.getElementById("summaryResolved").textContent = String(resolved);
+      document.getElementById("summaryHigh").textContent = String(high);
+    }
+
+    function openDeleteModal(id) {
+      deleteComplaintId = id;
+      document.getElementById("deletePassword").value = "";
+      new bootstrap.Modal(
+        document.getElementById("deleteModal")
+      ).show();
+    }
+
+    async function confirmDeleteComplaint() {
+
+      const password =
+        document.getElementById("deletePassword").value;
+
+      if (!password) {
+        alert("Enter password");
+        return;
+      }
+
+      // Get current session
+      const { data: sessionData, error: sessionError } =
+        await supabaseClient.auth.getSession();
+
+      if (sessionError || !sessionData.session) {
+        alert("Session expired. Please login again.");
+        return;
+      }
+
+      const email = sessionData.session.user.email;
+
+      // Try re-authenticate
+      const { error: authError } =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      if (authError) {
+        alert("Wrong password");
+        return;
+      }
+
+      const { error: relationError } = await supabaseClient
+        .from("complaint_students")
+        .delete()
+        .eq("complaint_id", deleteComplaintId);
+
+      if (relationError) {
+        console.error("Complaint relation delete failed:", relationError);
+        alert("Could not delete complaint students.");
+        return;
+      }
+
+      const { error: complaintError } = await supabaseClient
+        .from("complaints")
+        .delete()
+        .eq("id", deleteComplaintId);
+
+      if (complaintError) {
+        console.error("Complaint delete failed:", complaintError);
+        alert("Could not delete complaint.");
+        return;
+      }
+
+      bootstrap.Modal.getInstance(
+        document.getElementById("deleteModal")
+      ).hide();
+
+      new bootstrap.Modal(
+        document.getElementById("deleteSuccessModal")
+      ).show();
+
+      deleteComplaintId = null;
+      loadComplaints();
+    }
+    let allStudents = [];
+    let selectedStudentIds = new Set();
+
+    function handleStudentSearch() {
+
+      const query = document
+        .getElementById("studentSearch")
+        .value
+        .toLowerCase()
+        .trim();
+
+      const resultsDiv =
+        document.getElementById("searchResults");
+
+      resultsDiv.innerHTML = "";
+
+      if (!query || !Array.isArray(allStudents)) return;
+
+      const matches = allStudents.filter(s =>
+        (s.name || "").toLowerCase().includes(query) ||
+        String(s.hst_number || "").includes(query)
+      );
+
+      if (matches.length === 0) {
+        resultsDiv.innerHTML =
+          `<div class="list-group-item text-muted">
+        No students found
+      </div>`;
+        return;
+      }
+
+      matches.forEach(s => {
+
+        if (selectedStudentIds.has(s.id)) return;
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "list-group-item list-group-item-action";
+        btn.innerText = `${s.name} (${s.hst_number})`;
+
+        btn.onclick = () => {
+          addStudent(s.id, s.name, s.hst_number);
+        };
+
+        resultsDiv.appendChild(btn);
+      });
+    }
+
+    function addStudent(id, name, hst) {
+
+      selectedStudentIds.add(id);
+      renderSelectedStudents();
+      document.getElementById("studentSearch").value = "";
+      document.getElementById("searchResults").innerHTML = "";
+    }
+
+    function removeStudent(id) {
+      selectedStudentIds.delete(id);
+      renderSelectedStudents();
+      handleStudentSearch();
+    }
+
+    const supabaseClient = window.getSupabaseClient();
+
+    let allComplaints = [];
+    let complaintLoadError = "";
+    let currentComplaintPage = 1;
+    const complaintPageSize = 8;
+
+    async function loadStudents() {
+
+      let response;
+      try {
+        response = await withTimeout(
+          supabaseClient
+            .from("students")
+            .select("id,name,hst_number"),
+          "Student lookup timed out."
+        );
+      } catch (error) {
+        console.error("Student load error:", error);
+        allStudents = [];
+        return;
+      }
+
+      const data = response.data;
+      const error = response.error;
+
+      if (error) {
+        console.error("Student load error:", error);
+        allStudents = [];
+        return;
+      }
+
+      allStudents = data || [];
+    }
+
+    async function loadComplaints() {
+
+      let data;
+      let error;
+      try {
+        ({ data, error } = await withTimeout(
+          supabaseClient
+            .from("complaints")
+            .select(`
+      *,
+      complaint_students(
+        id,
+        status,
+        resolved_at,
+        students!complaint_students_student_id_fkey(
+        id,
+        name,
+        hst_number
+        ) 
+      )
+    `),
+          "Complaint lookup timed out."
+        ));
+      } catch (loadError) {
+        console.error("Complaint load error:", loadError);
+        allComplaints = [];
+        complaintLoadError = "Unable to load complaints. Please confirm you are logged in and Supabase is reachable.";
+        updateComplaintSummary();
+        renderComplaints();
+        return;
+      }
+
+      if (error) {
+        console.error("Complaint load error:", error);
+        allComplaints = [];
+        complaintLoadError = "Unable to load complaints. Please confirm you are logged in and Supabase policies allow this page to read complaint records.";
+        updateComplaintSummary();
+        renderComplaints();
+        return;
+      }
+
+      allComplaints = data || [];
+      complaintLoadError = "";
+      updateComplaintSummary();
+      renderComplaints();
+    }
+
+    function renderComplaints() {
+
+      const search = document.getElementById("searchBox").value.toLowerCase();
+      const statusFilter = document.getElementById("statusFilter").value;
+      const priorityFilter = document.getElementById("priorityFilter").value;
+
+      const container = document.getElementById("complaintList");
+      const pagination = document.getElementById("complaintsPagination");
+      const pageInfo = document.getElementById("complaintsPageInfo");
+      const prevBtn = document.getElementById("complaintsPrevBtn");
+      const nextBtn = document.getElementById("complaintsNextBtn");
+      container.innerHTML = "";
+
+      if (complaintLoadError) {
+        container.innerHTML = `<div class="card complaint-card p-4 text-center text-muted">${escapeHtml(complaintLoadError)}</div>`;
+        pageInfo.innerText = "Page 1 of 1 (0 complaints)";
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        pagination.style.display = "none";
+        return;
+      }
+
+      const filteredComplaints = [];
+
+      allComplaints.forEach(c => {
+
+        const students = (c.complaint_students || [])
+          .filter(s => s.students !== null);
+
+        const priority = c.priority || "low";
+
+        const pendingCount = students
+          .filter(s => s.status === "pending").length;
+
+        if (statusFilter === "pending" && pendingCount === 0) return;
+        if (statusFilter === "resolved" && pendingCount > 0) return;
+        if (priorityFilter !== "all" && priority !== priorityFilter) return;
+
+        const matchTitle = (c.title || "")
+          .toLowerCase()
+          .includes(search);
+
+        const matchStudent = students.some(s =>
+          s.students?.name?.toLowerCase().includes(search)
+        );
+
+        if (search && !matchTitle && !matchStudent) return;
+        filteredComplaints.push({ complaint: c, students, priority, pendingCount });
+      });
+
+      const totalItems = filteredComplaints.length;
+      const totalPages = Math.max(1, Math.ceil(totalItems / complaintPageSize));
+      if (currentComplaintPage > totalPages) currentComplaintPage = totalPages;
+      if (currentComplaintPage < 1) currentComplaintPage = 1;
+
+      const start = (currentComplaintPage - 1) * complaintPageSize;
+      const pageItems = filteredComplaints.slice(start, start + complaintPageSize);
+
+      pageItems.forEach(({ complaint: c, students, priority, pendingCount }) => {
+        const createdAt = c.created_at ? new Date(c.created_at).toLocaleString() : "-";
+        const studentRows = students.length ? students.map(s => `
+          <div class="student-row">
+            <div>
+              <strong>${escapeHtml(s.students.name)}</strong>
+              <span class="text-muted">(${escapeHtml(s.students.hst_number || "-")})</span>
+            </div>
+            ${s.status === "pending"
+              ? `<button class="btn btn-sm btn-success" type="button" onclick="runLockedAction('resolve-${escapeHtml(s.id)}', this, () => resolveStudent('${escapeHtml(s.id)}'))">
+                  <i class="bi bi-check2-circle me-1"></i> Resolve
+                </button>`
+              : `<span class="badge bg-success">Resolved</span>`
+            }
+          </div>
+        `).join("") : `<div class="text-muted">No students attached.</div>`;
+
+        container.innerHTML += `
+      <div class="card complaint-card mb-3">
+
+        <div class="card-body">
+
+          <div class="complaint-card-header" onclick="toggleDetails('${escapeHtml(c.id)}')">
+
+            <div>
+              <h6 class="complaint-title">${escapeHtml(c.title || "Untitled complaint")}</h6>
+              <small class="complaint-meta">
+                ${escapeHtml(createdAt)}
+              </small>
+            </div>
+
+            <div class="complaint-actions" onclick="event.stopPropagation()">
+
+              <span class="badge bg-${getPriorityColor(priority)} me-1">
+                ${escapeHtml(priority.toUpperCase())}
+              </span>
+
+              <span class="badge bg-secondary me-2">
+                ${pendingCount} Pending
+              </span>
+
+              <button class="btn btn-sm btn-outline-danger" type="button"
+                onclick="openDeleteModal('${escapeHtml(c.id)}')">
+                <i class="bi bi-trash3 me-1"></i> Delete
+              </button>
+
+            </div>
+
+          </div>
+
+          <div class="mt-3 collapse" id="details-${c.id}">
+
+            <div class="complaint-description mb-3">
+              <strong>Description</strong>
+              <div class="mt-2">
+                ${escapeHtml(c.description || "No description provided.")}
+              </div>
+            </div>
+
+            <div class="complaint-students">
+              <strong>Students</strong>
+
+              <div class="mt-2">
+                ${studentRows}
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    `;
+      });
+
+      if (totalItems === 0) {
+        container.innerHTML = `<div class="card shadow-sm p-4 text-center text-muted">No complaints found.</div>`;
+      }
+
+      pageInfo.innerText = `Page ${currentComplaintPage} of ${totalPages} (${totalItems} complaints)`;
+      prevBtn.disabled = currentComplaintPage <= 1;
+      nextBtn.disabled = currentComplaintPage >= totalPages;
+      pagination.style.display = totalItems > complaintPageSize ? "flex" : "none";
+    }
+
+    function toggleDetails(id) {
+      const el = document.getElementById("details-" + id);
+      el.style.display =
+        el.style.display === "block" ? "none" : "block";
+    }
+
+    async function createComplaint() {
+
+      const title = document.getElementById("compTitle").value.trim();
+      const desc = document.getElementById("compDesc").value.trim();
+      const priority = document.getElementById("compPriority").value;
+
+      const selected = [...selectedStudentIds];
+
+      if (!title) {
+        alert("Title and student selection required");
+        return;
+      }
+
+      if (selected.length === 0) {
+        alert("Select at least one student.");
+        return;
+      }
+
+      const { data, error: complaintError } = await supabaseClient
+        .from("complaints")
+        .insert([{
+          title,
+          description: desc,
+          priority,
+          created_at: new Date().toISOString(),
+          is_deleted: false
+        }])
+        .select()
+        .single();
+
+      if (complaintError || !data) {
+        console.error("Complaint create failed:", complaintError);
+        alert("Failed to create complaint.");
+        return;
+      }
+
+      const complaintId = data.id;
+
+      const links = selected.map(id => ({
+        complaint_id: complaintId,
+        student_id: id,
+        status: "pending"
+      }));
+
+      const { error: linkError } = await supabaseClient
+        .from("complaint_students")
+        .insert(links);
+
+      if (linkError) {
+        console.error("Complaint student link failed:", linkError);
+        await supabaseClient.from("complaints").delete().eq("id", complaintId);
+        alert("Failed to attach students. Complaint was not saved.");
+        return;
+      }
+
+      bootstrap.Modal.getInstance(
+        document.getElementById('addModal')
+      ).hide();
+
+      document.getElementById("compTitle").value = "";
+      document.getElementById("compDesc").value = "";
+      document.getElementById("compPriority").value = "high";
+      selectedStudentIds.clear();
+      renderSelectedStudents();
+      await loadComplaints();
+    }
+
+    async function resolveStudent(linkId) {
+
+      const { error } = await supabaseClient
+        .from("complaint_students")
+        .update({
+          status: "resolved",
+          resolved_at: new Date().toISOString()
+        })
+        .eq("id", linkId);
+
+      if (error) {
+        console.error("Resolve complaint failed:", error);
+        alert("Failed to resolve this student complaint.");
+        return;
+      }
+
+      await loadComplaints();
+    }
+
+    function openAddModal() {
+      document.getElementById("studentSearch").value = "";
+      document.getElementById("searchResults").innerHTML = "";
+      new bootstrap.Modal(
+        document.getElementById('addModal')
+      ).show();
+    }
+
+    document.getElementById("searchBox")
+      .addEventListener("input", function () {
+        currentComplaintPage = 1;
+        renderComplaints();
+      });
+
+    document.getElementById("statusFilter")
+      .addEventListener("change", function () {
+        currentComplaintPage = 1;
+        renderComplaints();
+      });
+
+    document.getElementById("priorityFilter")
+      .addEventListener("change", function () {
+        currentComplaintPage = 1;
+        renderComplaints();
+      });
+
+    document.getElementById("complaintsPrevBtn").addEventListener("click", function () {
+      currentComplaintPage -= 1;
+      renderComplaints();
+    });
+
+    document.getElementById("complaintsNextBtn").addEventListener("click", function () {
+      currentComplaintPage += 1;
+      renderComplaints();
+    });
+
+    async function init() {
+      document.getElementById("complaintList").innerHTML =
+        `<div class="card complaint-card p-4 text-center text-muted">Loading complaints...</div>`;
+      await Promise.all([loadStudents(), loadComplaints()]);
+    }
+
+    init();
+    document.addEventListener("DOMContentLoaded", function () {
+      document
+        .getElementById("studentSearch")
+        .addEventListener("input", handleStudentSearch);
+    });
+    function getPriorityColor(priority) {
+      if (priority === "high") return "danger";
+      if (priority === "medium") return "warning";
+      if (priority === "low") return "success";
+      return "secondary";
+    }
+
+    function toggleDetails(id) {
+      const el = document.getElementById("details-" + id);
+      const collapse = new bootstrap.Collapse(el, { toggle: true });
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <div class="modal fade" id="deleteModal">
+    <div class="modal-dialog">
+      <div class="modal-content p-3">
+        <h6>Confirm Delete</h6>
+        <input type="password" id="deletePassword" class="form-control mb-3" placeholder="Enter password">
+
+        <div class="text-end">
+          <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+
+          <button class="btn btn-danger btn-sm" id="deleteComplaintBtn" onclick="runLockedAction('delete-complaint', this, confirmDeleteComplaint)">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- DELETE SUCCESS MODAL -->
+  <div class="modal fade" id="deleteSuccessModal">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+      <div class="modal-content text-center p-4">
+
+        <div style="font-size:50px;color:#22c55e;"><i class="bi bi-check-circle-fill"></i></div>
+
+        <h6 class="mt-2">Deletion Successful</h6>
+
+        <button class="btn btn-primary btn-sm mt-3" data-bs-dismiss="modal">
+          OK
+        </button>
+
+      </div>
+    </div>
+  </div>
+  <script src="ui-shortcuts.js"></script>
+  <script src="app-layout.js"></script>
+</body>
+
+</html>
