@@ -21,7 +21,7 @@
  */
 (function () {
   const SUPABASE_URL = "https://rhnydvjdcnbnoqteudsw.supabase.co"; // CHANGE REQUIRED: replace with your Supabase project URL
-  const SUPABASE_ANON_KEY = "sb_publishable_hIdxlurqKmCs57caTsqLGQ_0L0vvFf8-G"; // CHANGE REQUIRED: replace with your Supabase publishable anon key
+  const SUPABASE_ANON_KEY = "sb_publishable_hIdxlurqKmCs57caTsqLGQ_0L0vvFf8"; // CHANGE REQUIRED: replace with your Supabase publishable anon key
   const APP_TIMEZONE = "Asia/Kolkata";
   const APP_UTC_OFFSET = "+05:30";
 
